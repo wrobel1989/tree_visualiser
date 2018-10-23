@@ -38,7 +38,9 @@ struct nodeElement {
     nodeElement(); //construct empty element of type "Node"
     ~nodeElement(); //destructor of the node - calls the destructors of its children - if present
 
-    nodeElement(const nodeElement& old); // copy constructor that takes care of copying the heap stuff
+    nodeElement(const nodeElement& old_root); // copy constructor that takes care of copying the heap stuff
+    nodeElement& operator=(const nodeElement& old); // assignment operator is also supposed to make full copy of subtree
+    bool isLeaf(){return children.size() == 0;} //helper function to tell if this is the leaf node
 
     // the leaf node holds the memory for the heap-storage of the data for the elements below
     void addInt(int integer_value_of_child); //adds node of integer type as a leaf for this node
@@ -46,6 +48,7 @@ struct nodeElement {
     void addString(const char* string_value_to_add); //the same as above, but for string.
 
     void addNode(const nodeElement& element); //adds new child node. Copy is made and managed in the tree
+    void addNode(); //add empty node
 
 private:
     int binarySearchForIndexToInsertIntoSortedLeafs(nodeElement* to_search); // this search the index that the new leaf should be
@@ -57,7 +60,7 @@ private:
 
 
 
-// this helper wraps the tree + the API for doing the operations on it
+// this helper wraps the tree
 struct Tree {
 private:
     nodeElement* parent;

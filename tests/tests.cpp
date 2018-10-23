@@ -73,6 +73,36 @@ TEST(SimpleFloatPointTest, FloatPointIsSorted) {
     ASSERT_EQ(66.6,  *((double*)floatTree.getParentNode()->children[5]->value));
 }
 
+TEST(SimpleCopyTest, SanitizeTreeCopy) {
+    Tree tree;
+    nodeElement* rootNode = tree.getParentNode();
+    {
+        nodeElement tmp;
+        tmp.addNode();
+        tmp.addNode();
+        nodeElement* mainbranch0 = tmp.children[0];
+        nodeElement* mainbranch1 = tmp.children[1];
+        mainbranch0->addInt(3);
+        mainbranch0->addInt(7);
+        mainbranch0->addInt(1);
+        mainbranch1->addFloat(8.8);
+        mainbranch1->addFloat(-4.1);
+        *rootNode = tmp;
+        //tmp gets destroyed - out of scope - check if root got correctly copied
+    }
+    GTEST_COUT << "Right now, I am creating a tree with two branches - one for the 3 ints and one for 2 floats" << std::endl;
+    GTEST_COUT << "I'm checking if the main tree gets preserved with the correct data in the heap - even after tmp goes out of scope and gets destroyed" << std::endl;
+    ASSERT_EQ(2, rootNode->children.size());
+    ASSERT_EQ(3, rootNode->children[0]->children.size());
+    ASSERT_EQ(2, rootNode->children[1]->children.size());
+    //assert content as well
+    ASSERT_EQ(1, *((int*)rootNode->children[0]->children[0]->value));
+    ASSERT_EQ(3, *((int*)rootNode->children[0]->children[1]->value));
+    ASSERT_EQ(7, *((int*)rootNode->children[0]->children[2]->value));
+    ASSERT_EQ(-4.1, *((double*)rootNode->children[1]->children[0]->value));
+    ASSERT_EQ(8.8,  *((double*)rootNode->children[1]->children[1]->value));
+}
+
 int main(int argc, char **argv) {
     testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();

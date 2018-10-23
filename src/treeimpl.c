@@ -37,6 +37,9 @@ int compare(const nodeElement& a, const nodeElement& b){
     if(a.type == b.type && a.type == floatpoint){ //we only know how to compare leaf elements of the same type
         return compare(*((double*)a.value), *((double*)b.value));
     }
+    if(a.type == b.type && a.type == string){ //we only know how to compare leaf elements of the same type
+        return compare(((const char*)a.value), ((const char*)b.value));
+    }
     // TODO : allow comparing integer to float - since their conversion makes sense
     return 1;
 }
@@ -48,8 +51,49 @@ nodeElement::nodeElement(){
     this->children.resize(0);
 }
 
-nodeElement::nodeElement(const nodeElement& old){
+//helper function that is called recursively - walks the tree, copy at each entry untill leafs found
+void copy_tree_recursively(const nodeElement& root_src, nodeElement* dst){
+    //copy main root element values
+    dst->type = root_src.type;
+    dst->objectName = root_src.objectName;
+    switch (dst->type){ // do the allocation of the space for value and copy it
+        case integer:{
+            dst->value = (void*) new int;
+            *((int*)dst->value) = *((int*)root_src.value);
+        }
+        break;
+        case floatpoint:{
+            dst->value = (void*) new double;
+            *((double*)dst->value) = *((double*)root_src.value);
+        }
+        break;
+        case string:{
+            dst->value = (void*)new char[strlen(((char*)root_src.value))+1];
+            strcpy((char*)dst->value, (const char*)root_src.value);
+        }
+        break;
+        case node:{
+            dst->value = NULL;
+        }
+        break;
+    }
+    if(root_src.children.size() > 0){
+        dst->children.resize(root_src.children.size());
+        for(int i = 0; i < root_src.children.size(); i++){
+            dst->children[i] = new nodeElement;
+            copy_tree_recursively(*(root_src.children[i]), dst->children[i]);
+        }
+    }
+}
 
+nodeElement& nodeElement::operator=(const nodeElement& old){
+    copy_tree_recursively(old, this);
+    return *this;
+}
+
+nodeElement::nodeElement(const nodeElement& old_root){
+    //recursion starts here
+    copy_tree_recursively(old_root, this);
 }
 
 nodeElement::~nodeElement(){
@@ -57,7 +101,7 @@ nodeElement::~nodeElement(){
         // if size > 0, then the pointers for the children must be valid
         for(int i = 0; i < this->children.size(); i++){
             nodeElement* child = this->children[i];
-            delete child;
+            delete child;//will further call destructors of the children that will walk down the tree
         }
     }else{
         //Means, we have primitive type, depending on the type, delete its heap-stored data
@@ -74,7 +118,7 @@ nodeElement::~nodeElement(){
             break;
             case string:{
                 char* cval = (char*)this->value;
-                delete cval;
+                delete []cval;
             }
             break;
         }
@@ -142,7 +186,29 @@ void nodeElement::addFloat(double floatpoint_value_of_child){
 }
 
 void nodeElement::addString(const char* string_value_to_add){
+    nodeElement *stringleaf = new nodeElement;
+    stringleaf->value = (void*)new char[strlen(string_value_to_add)+1];
+    strcpy((char*)stringleaf->value, string_value_to_add);
+    stringleaf->type = floatpoint;
+    stringleaf->objectName = objectNames[stringleaf->type];
+    stringleaf->children.resize(0);
+    if (this->children.size() == 0){
+        this->children.push_back(stringleaf);
+    } else {
+        int insertion_idx = this->binarySearchForIndexToInsertIntoSortedLeafs(stringleaf);
+        this->children.insert(this->children.begin()+insertion_idx, stringleaf);
+    }
+}
 
+void nodeElement::addNode(const nodeElement& element){
+    nodeElement *nodeleaf = new nodeElement;
+    copy_tree_recursively(element, nodeleaf);
+    this->children.push_back(nodeleaf);
+}
+
+void nodeElement::addNode(){
+    nodeElement *nodeleaf = new nodeElement;
+    this->children.push_back(nodeleaf);
 }
 
 Tree::Tree(){
