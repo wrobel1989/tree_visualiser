@@ -127,7 +127,18 @@ void nodeElement::addInt(int integer_value_of_child){
 }
 
 void nodeElement::addFloat(double floatpoint_value_of_child){
-
+    nodeElement *floatpointleaf = new nodeElement;
+    floatpointleaf->value = (void*)new double;
+    *((double*)floatpointleaf->value) = floatpoint_value_of_child;
+    floatpointleaf->type = floatpoint;
+    floatpointleaf->objectName = objectNames[floatpointleaf->type];
+    floatpointleaf->children.resize(0);
+    if (this->children.size() == 0){
+        this->children.push_back(floatpointleaf);
+    } else {
+        int insertion_idx = this->binarySearchForIndexToInsertIntoSortedLeafs(floatpointleaf);
+        this->children.insert(this->children.begin()+insertion_idx, floatpointleaf);
+    }
 }
 
 void nodeElement::addString(const char* string_value_to_add){

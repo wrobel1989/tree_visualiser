@@ -53,6 +53,26 @@ TEST(SimpleIntTest, IntIsSorted) {
     ASSERT_EQ(8, *((int*)intTree.getParentNode()->children[5]->value));
 }
 
+TEST(SimpleFloatPointTest, FloatPointIsSorted) {
+    Tree floatTree;
+    floatTree.getParentNode()->addFloat(10.1);
+    floatTree.getParentNode()->addFloat(-5.2);
+    floatTree.getParentNode()->addFloat(7.0);
+    floatTree.getParentNode()->addFloat(50.9);
+    floatTree.getParentNode()->addFloat(66.6);
+    floatTree.getParentNode()->addFloat(-22.1);
+    GTEST_COUT << "Right now, I am creating tree with only 6 floatpoint leafs within it : 10.1 -5.2 7.0 50.9 66.6 -22.1" << std::endl;
+    GTEST_COUT << "I'm checking if indeed those 6 elements are present and sorted - when added" << std::endl;
+    ASSERT_EQ(6, floatTree.getParentNode()->children.size());
+
+    ASSERT_EQ(-22.1, *((double*)floatTree.getParentNode()->children[0]->value));
+    ASSERT_EQ(-5.2,  *((double*)floatTree.getParentNode()->children[1]->value));
+    ASSERT_EQ(7.0,   *((double*)floatTree.getParentNode()->children[2]->value));
+    ASSERT_EQ(10.1,  *((double*)floatTree.getParentNode()->children[3]->value));
+    ASSERT_EQ(50.9,  *((double*)floatTree.getParentNode()->children[4]->value));
+    ASSERT_EQ(66.6,  *((double*)floatTree.getParentNode()->children[5]->value));
+}
+
 int main(int argc, char **argv) {
     testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
