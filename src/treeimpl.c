@@ -27,7 +27,12 @@ int compare(const T1& a, const T2& b){
 //also, the special case for comparing strings - we do not want to compare pointers values on the string memory
 //but the string content itself
 int compare(const char* a, const char* b){
-    return strcmp(a, b); // restore to strcmp for now
+    int cmpres = strcmp(a, b); //resort to strcmp for now
+    if (cmpres > 0)
+        return 1;
+    if (cmpres < 0)
+        return -1;
+    return 0;
 }
 
 int compare(const nodeElement& a, const nodeElement& b){
@@ -189,7 +194,7 @@ void nodeElement::addString(const char* string_value_to_add){
     nodeElement *stringleaf = new nodeElement;
     stringleaf->value = (void*)new char[strlen(string_value_to_add)+1];
     strcpy((char*)stringleaf->value, string_value_to_add);
-    stringleaf->type = floatpoint;
+    stringleaf->type = string;
     stringleaf->objectName = objectNames[stringleaf->type];
     stringleaf->children.resize(0);
     if (this->children.size() == 0){

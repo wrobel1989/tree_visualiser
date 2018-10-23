@@ -73,6 +73,26 @@ TEST(SimpleFloatPointTest, FloatPointIsSorted) {
     ASSERT_EQ(66.6,  *((double*)floatTree.getParentNode()->children[5]->value));
 }
 
+TEST(SimpleStringTest, StringInsertionSanity) {
+    Tree strTree;
+    strTree.getParentNode()->addString("abd");
+    strTree.getParentNode()->addString("abc");
+    strTree.getParentNode()->addString("xylitol");
+    strTree.getParentNode()->addString("deadbeef");
+    GTEST_COUT << "Right now, I am creating tree with only 4 strings leafs within it" << std::endl;
+    GTEST_COUT << "I'm checking if indeed 4 elements are present and if the strings are sorted" << std::endl;
+    ASSERT_EQ(4, strTree.getParentNode()->children.size());
+
+    int cmp_string_content_result1 = strcmp((const char*)strTree.getParentNode()->children[0]->value, "abc"); //returned 0 means strings equal
+    int cmp_string_content_result2 = strcmp((const char*)strTree.getParentNode()->children[1]->value, "abd"); //returned 0 means strings equal
+    int cmp_string_content_result3 = strcmp((const char*)strTree.getParentNode()->children[2]->value, "deadbeef"); //returned 0 means strings equal
+    int cmp_string_content_result4 = strcmp((const char*)strTree.getParentNode()->children[3]->value, "xylitol"); //returned 0 means strings equal
+    ASSERT_EQ(0, cmp_string_content_result1);
+    ASSERT_EQ(0, cmp_string_content_result2);
+    ASSERT_EQ(0, cmp_string_content_result3);
+    ASSERT_EQ(0, cmp_string_content_result4);
+}
+
 TEST(SimpleCopyTest, SanitizeTreeCopy) {
     Tree tree;
     nodeElement* rootNode = tree.getParentNode();
@@ -80,27 +100,33 @@ TEST(SimpleCopyTest, SanitizeTreeCopy) {
         nodeElement tmp;
         tmp.addNode();
         tmp.addNode();
+        tmp.addNode();
         nodeElement* mainbranch0 = tmp.children[0];
         nodeElement* mainbranch1 = tmp.children[1];
+        nodeElement* mainbranch2 = tmp.children[2];
         mainbranch0->addInt(3);
         mainbranch0->addInt(7);
         mainbranch0->addInt(1);
         mainbranch1->addFloat(8.8);
         mainbranch1->addFloat(-4.1);
+        mainbranch2->addString("DeadBeef");
         *rootNode = tmp;
         //tmp gets destroyed - out of scope - check if root got correctly copied
     }
-    GTEST_COUT << "Right now, I am creating a tree with two branches - one for the 3 ints and one for 2 floats" << std::endl;
+    GTEST_COUT << "Right now, I am creating a tree with three branches - one for the 3 ints, one for 2 floats and one for string" << std::endl;
     GTEST_COUT << "I'm checking if the main tree gets preserved with the correct data in the heap - even after tmp goes out of scope and gets destroyed" << std::endl;
-    ASSERT_EQ(2, rootNode->children.size());
+    ASSERT_EQ(3, rootNode->children.size());
     ASSERT_EQ(3, rootNode->children[0]->children.size());
     ASSERT_EQ(2, rootNode->children[1]->children.size());
+    ASSERT_EQ(1, rootNode->children[2]->children.size());
     //assert content as well
     ASSERT_EQ(1, *((int*)rootNode->children[0]->children[0]->value));
     ASSERT_EQ(3, *((int*)rootNode->children[0]->children[1]->value));
     ASSERT_EQ(7, *((int*)rootNode->children[0]->children[2]->value));
     ASSERT_EQ(-4.1, *((double*)rootNode->children[1]->children[0]->value));
     ASSERT_EQ(8.8,  *((double*)rootNode->children[1]->children[1]->value));
+    int cmp_string_content_result = strcmp((const char*)rootNode->children[2]->children[0]->value, "DeadBeef");
+    ASSERT_EQ(0, cmp_string_content_result);
 }
 
 int main(int argc, char **argv) {
