@@ -1,2 +1,3 @@
-# tree_visualiser
-Small utility to manage tree structure and allows it to be visualized
+# Tree visualizer
+
+Small utility to manage tree structure + allows it to be visualized
