@@ -129,6 +129,59 @@ TEST(SimpleCopyTest, SanitizeTreeCopy) {
     ASSERT_EQ(0, cmp_string_content_result);
 }
 
+TEST(JsonSerializeTest, Serialize_1) {
+    Tree customTree;
+    customTree.getParentNode()->addInt(9);
+    customTree.getParentNode()->addInt(4);
+    customTree.getParentNode()->addInt(1);
+    customTree.getParentNode()->addNode();
+    customTree.getParentNode()->addInt(2);
+    char* printbuf = new char[256*1024]; //work on 256KB buffer
+    GTEST_COUT << "Serializing simple node with 4 ints and one node and checking if it is correct" << std::endl;
+    customTree.getParentNode()->serializeToJson(printbuf);
+    GTEST_COUT << "Json serializer for the tree will print: " << std::endl;
+    GTEST_COUT << " " << printbuf << std::endl;
+    ASSERT_EQ(5, customTree.getParentNode()->children.size());
+    int cmp_string_content_result = strcmp(printbuf, "{1, 2, 4, 9, {}}");
+    ASSERT_EQ(0, cmp_string_content_result);
+    delete printbuf;
+}
+
+TEST(JsonSerializeTest, Serialize_2) {
+    Tree tree;
+    nodeElement* rootNode = tree.getParentNode();
+    {
+        nodeElement tmp;
+        tmp.addNode();
+        tmp.addNode();
+        tmp.addNode();
+        nodeElement* mainbranch0 = tmp.children[0];
+        nodeElement* mainbranch1 = tmp.children[1];
+        nodeElement* mainbranch2 = tmp.children[2];
+        mainbranch0->addInt(3);
+        mainbranch0->addInt(7);
+        mainbranch0->addInt(1);
+        mainbranch1->addFloat(8.80000005);
+        mainbranch1->addFloat(-4.100000);
+        mainbranch1->addFloat(6.7e-98);
+        mainbranch2->addString("xyz");
+        mainbranch2->addString("DeadBeef");
+        mainbranch2->addString("abba");
+        mainbranch2->addNode();
+        mainbranch2->children[3]->addInt(2);
+        mainbranch2->children[3]->addInt(1);
+        *rootNode = tmp;
+    }
+    char* printbuf = new char[256*1024]; //work on 256KB buffer
+    GTEST_COUT << "Serializing simple node with several nodes and subnodes" << std::endl;
+    tree.getParentNode()->serializeToJson(printbuf);
+    GTEST_COUT << "Json serializer for the tree will print: " << std::endl;
+    GTEST_COUT << " " << printbuf << std::endl;
+    int cmp_string_content_result = strcmp(printbuf, "{{1, 3, 7}, {-4.1, 6.7e-98, 8.8}, {\"DeadBeef\", \"abba\", \"xyz\", {1, 2}}}");
+    ASSERT_EQ(0, cmp_string_content_result);
+    delete printbuf;
+}
+
 int main(int argc, char **argv) {
     testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();

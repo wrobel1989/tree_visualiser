@@ -216,6 +216,52 @@ void nodeElement::addNode(){
     this->children.push_back(nodeleaf);
 }
 
+// no need to ", " for the last element - the "is_spacer" will tell us that
+void serialize_helper(char* buffer, const nodeElement* element, int& currpos_inbuffer, bool is_spacer){
+    switch (element->type){ // do the allocation of the space for value and copy it
+        case integer:{
+            const char* nospacer = "%d";
+            const char* spacer = "%d, ";
+            currpos_inbuffer += sprintf(buffer+currpos_inbuffer,
+                                        is_spacer ? spacer : nospacer,
+                                        *((int*)element->value));
+        }
+        break;
+        case floatpoint:{
+            const char* nospacer = "%g"; //formats nicely with no trailing zeros in the float
+            const char* spacer = "%g, ";
+            currpos_inbuffer += sprintf(buffer+currpos_inbuffer,
+                                        is_spacer ? spacer : nospacer,
+                                        *((double*)element->value));
+        }
+        break;
+        case string:{
+            const char* nospacer = "\"%s\"";
+            const char* spacer = "\"%s\", ";
+            currpos_inbuffer += sprintf(buffer+currpos_inbuffer,
+                                        is_spacer ? spacer : nospacer,
+                                        ((char*)element->value));
+        }
+        break;
+    }
+    if(element->children.size() > 0){
+        currpos_inbuffer += sprintf(buffer+currpos_inbuffer,"{");
+        for(int i = 0; i < element->children.size(); i++){
+            serialize_helper(buffer, element->children[i], currpos_inbuffer,
+                             i != element->children.size() - 1);
+        }
+        currpos_inbuffer += sprintf(buffer+currpos_inbuffer, is_spacer ? "}, " : "}");
+    } else {
+        if (element->type == node) //empty node
+            currpos_inbuffer += sprintf(buffer+currpos_inbuffer,"{}");
+    }
+}
+
+void nodeElement::serializeToJson(char* buffer){
+    int currpos = 0;
+    serialize_helper(buffer, this, currpos, false);
+}
+
 Tree::Tree(){
     this->parent = new nodeElement;
 }

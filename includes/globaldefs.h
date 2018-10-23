@@ -50,6 +50,9 @@ struct nodeElement {
     void addNode(const nodeElement& element); //adds new child node. Copy is made and managed in the tree
     void addNode(); //add empty node
 
+    //will print to buffer using sprintf. Assumes the passed chunk of memory in "buffer" has enough space.
+    void serializeToJson(char* buffer);
+
 private:
     int binarySearchForIndexToInsertIntoSortedLeafs(nodeElement* to_search); // this search the index that the new leaf should be
     //inserted. If at that level, some non-primitive node is present - it ignores it -
