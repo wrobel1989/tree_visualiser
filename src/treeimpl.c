@@ -11,8 +11,17 @@ nodeElement::nodeElement(){
     this->type = node;
     this->objectName = (char*)objectNames[this->type];
     this->value = NULL;
-    this->numberOfChilden = 0;
-    this->children = NULL;
+    this->children.resize(0);
+}
+
+nodeElement::~nodeElement(){
+    if(this->children.size() > 0){
+        // if size > 0, then the pointers for the children must be valid
+        for(int i = 0; i < this->children.size(); i++){
+            nodeElement* child = this->children[i];
+            delete child;
+        }
+    }
 }
 
 Tree::Tree(){

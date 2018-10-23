@@ -1,4 +1,5 @@
 #include <cstddef>
+#include <vector>
 
 // defines list of types, that we support
 enum elementType {
@@ -32,10 +33,10 @@ struct nodeElement {
     //these we define ourselves
     // we determine the type. this directly connects to the objectName above
     elementType type;
-    int numberOfChilden; //only for node this can be > 0. If 0 - means empty node.
-    nodeElement** children; //array of pointers to the children elements - of size numberOfChilden
+    std::vector<nodeElement*> children; //array of pointers to the children elements - of size numberOfChilden
 
     nodeElement(); //construct empty element of type "Node"
+    ~nodeElement(); //destructor of the node - calls the destructors of its children - if present
 };
 
 typedef nodeElement nodeElement;
