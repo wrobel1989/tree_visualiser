@@ -27,7 +27,7 @@ struct nodeElement {
     // the type is determined by type information - using that type, we can properly interpret data for
     // the primitive type
 
-    char* objectName; //this is directly connected to the type - it holds human-readable name for the type
+    const char* objectName; //this is directly connected to the type - it holds human-readable name for the type
     // it can point to one of the string in the objectNames
 
     //these we define ourselves
@@ -37,9 +37,23 @@ struct nodeElement {
 
     nodeElement(); //construct empty element of type "Node"
     ~nodeElement(); //destructor of the node - calls the destructors of its children - if present
+
+    nodeElement(const nodeElement& old); // copy constructor that takes care of copying the heap stuff
+
+    // the leaf node holds the memory for the heap-storage of the data for the elements below
+    void addInt(int integer_value_of_child); //adds node of integer type as a leaf for this node
+    void addFloat(double floatpoint_value_of_child); //the same as integer, but for the float-point value
+    void addString(const char* string_value_to_add); //the same as above, but for string.
+
+    void addNode(const nodeElement& element); //adds new child node. Copy is made and managed in the tree
+
+private:
+    int binarySearchForIndexToInsertIntoSortedLeafs(nodeElement* to_search); // this search the index that the new leaf should be
+    //inserted. If at that level, some non-primitive node is present - it ignores it -
+    //since it is undefined how to compare float or int with the general-purpose nodeElement
+    //Also, that way of insert will keep the node elements (within one type) always sorted
 };
 
-typedef nodeElement nodeElement;
 
 
 
