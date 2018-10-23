@@ -1,3 +1,4 @@
+#include <cstddef>
 
 // defines list of types, that we support
 enum elementType {
@@ -7,13 +8,13 @@ enum elementType {
     integer, //integer
     floatpoint, //double
     string, //string
+    // ..
+    NumberOfElementTypes //dummy for getting the type count
 };
 
-//this directly holds the names for the types we define above
-const char *objectNames[] = {"Node",
-                             "integer",
-                             "float",
-                             "string"};
+//this directly holds the names for the types we define above. Stored in treeimpl.c - to avoid
+//generating multiple symbols storage by linker, when including the same header in different files
+extern const char *objectNames[];
 
 // This is a straightforward representation of a single node element in the tree
 // Every node structure starts from a "parent", which has no parent
@@ -32,7 +33,21 @@ struct nodeElement {
     // we determine the type. this directly connects to the objectName above
     elementType type;
     int numberOfChilden; //only for node this can be > 0. If 0 - means empty node.
-    nodeElement** children; //array of pointers to the children elements.
+    nodeElement** children; //array of pointers to the children elements - of size numberOfChilden
+
+    nodeElement(); //construct empty element of type "Node"
 };
 
 typedef nodeElement nodeElement;
+
+
+
+// this helper wraps the tree + the API for doing the operations on it
+struct Tree {
+private:
+    nodeElement* parent;
+public:
+    nodeElement* getParentNode();
+    Tree(); //construct empty tree
+    ~Tree(); //destroy tree
+};
