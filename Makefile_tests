@@ -1,0 +1,12 @@
+DEBUGFLAGS=-g -O0 -fPIC
+RELEASEFLAGS=-O3 -fPIC
+
+FLAGS=$(DEBUGFLAGS)
+GTEST_DIR=/usr/src/gtest
+
+.PHONY: all tests clean
+
+tests: tests/tests.cpp src/treeimpl.cpp
+	g++ $(FLAGS) -I./includes tests/tests.cpp src/treeimpl.cpp -o runtests -I$(GTEST_DIR) $(GTEST_DIR)/src/gtest-all.cc -lpthread
+	
+all: tests
