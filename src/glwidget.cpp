@@ -8,7 +8,7 @@
 GLWidget::GLWidget(TreeDrawer *helper, QWidget *parent)
     : QOpenGLWidget(parent), drawer(helper)
 {
-    setFixedSize(700, 700);
+    setFixedSize(1200, 700);
     setAutoFillBackground(false);
 }
 

@@ -6,6 +6,7 @@
 #include <QFont>
 #include <QPen>
 #include <QWidget>
+#include <globaldefs.h>
 
 class TreeDrawer
 {
@@ -17,8 +18,11 @@ public:
 
 private:
     QBrush background;
-    QFont textFont;
     QPen textPen;
+
+    nodeElement getSampleTree();
+    void paintTree(QPainter* p, nodeElement* tree, int width, int height);
+
 };
 
 #endif
