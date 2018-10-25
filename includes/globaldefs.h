@@ -1,3 +1,5 @@
+#ifndef GLOB
+#define GLOB
 #include <cstddef>
 #include <vector>
 
@@ -73,3 +75,4 @@ public:
     Tree(); //construct empty tree
     ~Tree(); //destroy tree
 };
+#endif

@@ -2,8 +2,8 @@
 #define GLWIDGET_H
 
 #include <QOpenGLWidget>
+#include <treedrawer.h>
 
-class TreeDrawer;
 
 class GLWidget : public QOpenGLWidget
 {
@@ -11,6 +11,9 @@ class GLWidget : public QOpenGLWidget
 
 public:
     GLWidget(TreeDrawer *drawer, QWidget *parent);
+
+    char** getTreeNames() {return drawer->getTreeNames();}
+    void setTreeIndex(int index) {drawer->setTreeIndex(index);}
 
 public slots:
     void animate();

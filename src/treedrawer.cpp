@@ -5,9 +5,33 @@
 #include <QPaintEvent>
 #include <QWidget>
 
+
 TreeDrawer::TreeDrawer()
 {
     background = QBrush(QColor(0xff, 0xff, 0xff));
+
+    this->nSampleTrees = 3;
+    this->selectedTreeIndex = 0;
+
+    this->treeNames = new char*[this->nSampleTrees];
+    this->treeNames[0] = "TreeBig1";
+    this->treeNames[1] = "Tree2";
+    this->treeNames[2] = "TreeBigBinary3";
+
+    this->sampleTrees = new nodeElement*[this->nSampleTrees];
+    for(int i = 0; i < this->nSampleTrees; i++){
+        this->sampleTrees[i] = new nodeElement;
+    }
+    this->assignSampleTrees();
+
+}
+
+TreeDrawer::~TreeDrawer(){
+    delete []this->treeNames;
+    for(int i = 0; i < this->nSampleTrees; i++){
+        delete this->sampleTrees[i];
+    }
+    delete []this->sampleTrees;
 }
 
 void drawTextInBoundingBoxIfFits(QPainter* p, const char* text,
@@ -21,7 +45,7 @@ void drawTextInBoundingBoxIfFits(QPainter* p, const char* text,
     // or fall back to some other option - like try dimnishing text until fits (if ever), etc..
 }
 
-nodeElement TreeDrawer::getSampleTree(){
+void TreeDrawer::assignSampleTrees(){
     nodeElement tmp;
     tmp.addNode();
     tmp.addNode();
@@ -39,9 +63,40 @@ nodeElement TreeDrawer::getSampleTree(){
     mainbranch2->addNode();
     mainbranch2->children[2]->addInt(2);
     mainbranch2->children[2]->addInt(1);
-    return tmp;
-}
+    *(this->sampleTrees[0]) = tmp;
+    //second now
+    this->sampleTrees[1]->addNode();
+    this->sampleTrees[1]->addString("Some leaf text node here..");
+    this->sampleTrees[1]->children[1]->addInt(666);
+    this->sampleTrees[1]->children[1]->addNode();
+    this->sampleTrees[1]->children[1]->children[1]->addNode();
+    this->sampleTrees[1]->children[1]->children[1]->children[0]->addFloat(3.14);
+    //third sample tree
+    // TODO : some regularity here, build binary tree autogenerator for "binary" trees
+    this->sampleTrees[2]->addNode();
+    this->sampleTrees[2]->addNode();
+    this->sampleTrees[2]->children[0]->addNode();
+    this->sampleTrees[2]->children[0]->addNode();
+    this->sampleTrees[2]->children[1]->addNode();
+    this->sampleTrees[2]->children[1]->addNode();
+    this->sampleTrees[2]->children[0]->children[0]->addNode();
+    this->sampleTrees[2]->children[0]->children[0]->addNode();
+    this->sampleTrees[2]->children[0]->children[1]->addNode();
+    this->sampleTrees[2]->children[0]->children[1]->addNode();
+    this->sampleTrees[2]->children[1]->children[0]->addNode();
+    this->sampleTrees[2]->children[1]->children[0]->addNode();
+    this->sampleTrees[2]->children[1]->children[1]->addNode();
+    this->sampleTrees[2]->children[1]->children[1]->addNode();
 
+    this->sampleTrees[2]->children[0]->children[0]->children[0]->addString("000");
+    this->sampleTrees[2]->children[0]->children[0]->children[1]->addString("001");
+    this->sampleTrees[2]->children[0]->children[1]->children[0]->addString("010");
+    this->sampleTrees[2]->children[0]->children[1]->children[1]->addString("011");
+    this->sampleTrees[2]->children[1]->children[0]->children[0]->addString("100");
+    this->sampleTrees[2]->children[1]->children[0]->children[1]->addString("101");
+    this->sampleTrees[2]->children[1]->children[1]->children[0]->addString("110");
+    this->sampleTrees[2]->children[1]->children[1]->children[1]->addString("111");
+}
 
 // helper function that paints the tree recursively - element by element
 // In the given full window of (widht, height) - the element is matched on the proper Y coord by Ylevel/depth ratio
@@ -135,7 +190,8 @@ void TreeDrawer::paint(QPainter *painter, QPaintEvent *event, int width, int hei
 {
     painter->fillRect(event->rect(), background);
 
-    nodeElement tree = getSampleTree();
+    nodeElement tree = *(this->sampleTrees[this->selectedTreeIndex]);
     paintTree(painter, &tree, width, height);
 
 }
+
