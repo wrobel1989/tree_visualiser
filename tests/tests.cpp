@@ -182,6 +182,39 @@ TEST(JsonSerializeTest, Serialize_2) {
     delete printbuf;
 }
 
+TEST(TreeDepthTest1, TestTreeDepthFunction) {
+    nodeElement tmp;
+    char* printbuf = new char[256*1024]; //work on 256KB buffer
+    tmp.serializeToJson(printbuf);
+    GTEST_COUT << "Testing node depth function (expects 1) for a empty tree : " << std::endl << printbuf << std::endl;
+    ASSERT_EQ(1, tmp.getDepth());
+    delete printbuf;
+}
+
+TEST(TreeDepthTest2, TestTreeDepthFunction) {
+    nodeElement tmp;
+    tmp.addNode();
+    tmp.addNode();
+    tmp.addNode();
+    nodeElement* mainbranch0 = tmp.children[0];
+    nodeElement* mainbranch1 = tmp.children[1];
+    nodeElement* mainbranch2 = tmp.children[2];
+    mainbranch0->addInt(7);
+    mainbranch0->addInt(1);
+    mainbranch1->addFloat(8.80000005);
+    mainbranch1->addFloat(-7.100000);
+    mainbranch2->addString("xyz");
+    mainbranch2->addNode();
+    mainbranch2->children[1]->addInt(9);
+    mainbranch2->children[1]->addInt(8);
+
+    char* printbuf = new char[256*1024]; //work on 256KB buffer
+    tmp.serializeToJson(printbuf);
+    GTEST_COUT << "Testing node depth function (expects 4) for a tree : " << std::endl << printbuf << std::endl;
+    ASSERT_EQ(4, tmp.getDepth());
+    delete printbuf;
+}
+
 int main(int argc, char **argv) {
     testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();

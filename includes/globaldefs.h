@@ -50,6 +50,7 @@ struct nodeElement {
     void addNode(const nodeElement& element); //adds new child node. Copy is made and managed in the tree
     void addNode(); //add empty node
 
+    int getDepth(); //walks from this node to all the children and returns tree depth - starting from this node
     //will print to buffer using sprintf. Assumes the passed chunk of memory in "buffer" has enough space.
     void serializeToJson(char* buffer);
 

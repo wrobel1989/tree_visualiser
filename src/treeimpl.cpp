@@ -216,6 +216,22 @@ void nodeElement::addNode(){
     this->children.push_back(nodeleaf);
 }
 
+void walkdepth(nodeElement* curr_element, int curr_depth, int* current_max){
+    if(curr_element->children.size() > 0){
+        for(int i = 0; i < curr_element->children.size(); i++){
+            if(*current_max < curr_depth + 1)
+                *current_max = curr_depth + 1;
+            walkdepth(curr_element->children[i], curr_depth + 1, current_max);
+        }
+    }
+}
+
+int nodeElement::getDepth(){
+    int max_depth = 1;
+    walkdepth(this, 1, &max_depth);
+    return max_depth;
+}
+
 // no need to ", " for the last element - the "is_spacer" will tell us that
 void serialize_helper(char* buffer, const nodeElement* element, int& currpos_inbuffer, bool is_spacer){
     switch (element->type){ // do the allocation of the space for value and copy it
